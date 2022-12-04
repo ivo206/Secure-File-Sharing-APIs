@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,8 +41,17 @@ public class FilesApiController implements FilesApi {
 
     public ResponseEntity<byte[]> downloadFile(String fileId, String token) {
 
-
-        return new ResponseEntity<byte[]>(HttpStatus.NOT_IMPLEMENTED);
+        try {
+            byte[] fileData = fileService.downloadFile(UUID.fromString(fileId), token);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            return new ResponseEntity<byte[]>(fileData, HttpStatus.OK);
+        }
+        catch (IllegalArgumentException e) {
+            return new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+        } catch (IOException e) {
+            return new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     public ResponseEntity<Files> listFiles(Integer limit) {

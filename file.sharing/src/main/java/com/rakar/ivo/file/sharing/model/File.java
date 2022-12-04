@@ -183,8 +183,4 @@ public class File {
         }
         return o.toString().replace("\n", "\n    ");
     }
-
-    public void setExtension(String fileExtension) {
-        this.name += "." + fileExtension;
-    }
 }

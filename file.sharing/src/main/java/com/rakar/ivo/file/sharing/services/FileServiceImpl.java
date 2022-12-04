@@ -49,23 +49,39 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void uploadFile(String fileId, MultipartFile file) {
-        Optional<FileEntity> entity = repository.findById(UUID.fromString(fileId));
+        Optional<FileEntity> maybeEntity = repository.findById(UUID.fromString(fileId));
 
-        if(!entity.isPresent())
+        if(!maybeEntity.isPresent())
             throw new FileNotFoundException(String.format("No file exists with the file id s%", fileId));
 
-        File fileRecord = fileMapper.entityToModel(entity.get());
+        FileEntity entity = maybeEntity.get();
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-        fileRecord.setExtension(fileExtension);
+        entity.setExtension(fileExtension);
 
         try {
-            Path targetLocation = fileStorageLocation.resolve(fileRecord.getName());
+            Path targetLocation = fileStorageLocation.resolve(fileId+"."+fileExtension);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new FileStorageException("Could not store file " + file.getName() + "Please try again.", e);
         }
 
-        FileEntity updatedEntity = fileMapper.modelToEntity(fileRecord);
-        repository.save(updatedEntity);
+        repository.save(entity);
+    }
+
+    @Override
+    public byte[] downloadFile(UUID fileId, String token) throws IOException {
+        Optional<FileEntity> maybeFile = repository.findById(fileId);
+        if(!maybeFile.isPresent())
+            throw new FileNotFoundException("The file with id "+fileId+" does not exist");
+
+        FileEntity entity = maybeFile.get();
+
+        Path fileLocation = fileStorageLocation.resolve(fileId+"."+entity.getExtension()).normalize();;
+        java.io.File file = new java.io.File(fileLocation.toUri());
+
+        if(!file.exists())
+            throw new FileNotFoundException("The file with id "+fileId+" does not exist");
+
+        return Files.readAllBytes(file.toPath());
     }
 }
