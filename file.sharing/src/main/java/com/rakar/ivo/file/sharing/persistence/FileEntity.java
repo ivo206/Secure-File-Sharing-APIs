@@ -1,13 +1,9 @@
 package com.rakar.ivo.file.sharing.persistence;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.rakar.ivo.file.sharing.model.File;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -40,6 +36,8 @@ public class FileEntity {
 
     private String signature = null;
 
+    private String extension = null;
+
     public UUID getId() {
         return id;
     }
@@ -51,6 +49,10 @@ public class FileEntity {
     public String getName() {
         return name;
     }
+
+    public String getExtension() { return extension; }
+
+    public void setExtension(String extension) { this.extension = extension; }
 
     public void setName(String name) {
         this.name = name;
