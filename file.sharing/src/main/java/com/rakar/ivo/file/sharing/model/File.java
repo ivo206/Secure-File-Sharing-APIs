@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Validated
 public class File {
     @JsonProperty("id")
-    private Long id = null;
+    private UUID id = null;
 
     @JsonProperty("name")
     private String name = null;
@@ -25,7 +26,7 @@ public class File {
     @JsonProperty("signature")
     private String signature = null;
 
-    public File id(Long id) {
+    public File id(UUID id) {
         this.id = id;
         return this;
     }
@@ -35,11 +36,11 @@ public class File {
      * @return id
      **/
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -181,5 +182,9 @@ public class File {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
+    }
+
+    public void setExtension(String fileExtension) {
+        this.name += "." + fileExtension;
     }
 }
