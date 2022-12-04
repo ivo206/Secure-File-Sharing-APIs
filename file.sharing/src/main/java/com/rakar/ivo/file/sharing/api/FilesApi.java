@@ -1,11 +1,13 @@
 package com.rakar.ivo.file.sharing.api;
 
+import com.rakar.ivo.file.sharing.model.File;
 import com.rakar.ivo.file.sharing.model.Files;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.util.UUID;
 
 public interface FilesApi {
 
@@ -13,12 +15,12 @@ public interface FilesApi {
             produces = { "application/json" },
             consumes = { "application/json" },
             method = RequestMethod.POST)
-    ResponseEntity<Void> createFile(@RequestBody File body);
+    ResponseEntity<UUID> createFile(@RequestBody File body);
 
     @RequestMapping(value = "/files/{fileId}/download",
             produces = { "application/octet-stream", "application/json" },
             method = RequestMethod.GET)
-    ResponseEntity<Resource> downloadFile(@PathVariable("fileId") String fileId, @RequestParam(value = "token", required = false) String token);
+    ResponseEntity<byte[]> downloadFile(@PathVariable("fileId") String fileId, @RequestParam(value = "token", required = false) String token);
 
     @RequestMapping(value = "/files",
             produces = { "application/json" },
@@ -42,7 +44,7 @@ public interface FilesApi {
 
     @RequestMapping(value = "/files/{fileId}/upload",
             produces = { "text/plain", "application/json" },
-            consumes = { "application/octet-stream" },
+            consumes = { "multipart/form-data" },
             method = RequestMethod.POST)
-    ResponseEntity<Boolean> uploadFile(@PathVariable("fileId") String fileId, @RequestBody Object body);
+    ResponseEntity<String> uploadFile(@PathVariable("fileId") String fileId, @RequestParam("file") MultipartFile file);
 }
