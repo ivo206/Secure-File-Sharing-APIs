@@ -34,85 +34,61 @@ public class FilesApiController implements FilesApi {
         this.fileService = fileService;
     }
 
+    @Override
     public ResponseEntity<UUID> createFile(File body) {
         File file = fileService.createFile(body);
-        return new ResponseEntity<UUID>(file.getId(), HttpStatus.CREATED);
+        return new ResponseEntity<>(file.getId(), HttpStatus.CREATED);
     }
 
+    @Override
     public ResponseEntity<byte[]> downloadFile(String fileId, String token) {
 
         try {
             byte[] fileData = fileService.downloadFile(UUID.fromString(fileId), token);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            return new ResponseEntity<byte[]>(fileData, HttpStatus.OK);
+            return new ResponseEntity<>(fileData, HttpStatus.OK);
         }
         catch (IllegalArgumentException e) {
-            return new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (IOException e) {
-            return new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
+    @Override
     public ResponseEntity<Files> listFiles(Integer limit) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             try {
 
-                return new ResponseEntity<Files>(objectMapper.readValue("[ {\n  \"descr\" : \"descr\",\n  \"signature\" : \"signature\",\n  \"name\" : \"name\",\n  \"id\" : 0,\n  \"virus\" : true,\n  \"ownedBy\" : 6\n}, {\n  \"descr\" : \"descr\",\n  \"signature\" : \"signature\",\n  \"name\" : \"name\",\n  \"id\" : 0,\n  \"virus\" : true,\n  \"ownedBy\" : 6\n} ]", Files.class), HttpStatus.NOT_IMPLEMENTED);
+                return new ResponseEntity<>(objectMapper.readValue("[ {\n  \"descr\" : \"descr\",\n  \"signature\" : \"signature\",\n  \"name\" : \"name\",\n  \"id\" : 0,\n  \"virus\" : true,\n  \"ownedBy\" : 6\n}, {\n  \"descr\" : \"descr\",\n  \"signature\" : \"signature\",\n  \"name\" : \"name\",\n  \"id\" : 0,\n  \"virus\" : true,\n  \"ownedBy\" : 6\n} ]", Files.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<Files>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
 
-        return new ResponseEntity<Files>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Boolean> recoverFile(String fileId) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<Boolean>(objectMapper.readValue("false", Boolean.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<Boolean>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+    @Override
+    public ResponseEntity<Void> deleteFileByID(String fileId) {
+        try {
+            fileService.deleteFileByID(UUID.fromString(fileId));
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        return new ResponseEntity<Boolean>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Resource> shareableURL(String fileId, String userName, String expires) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<Resource>(objectMapper.readValue("\"\"", Resource.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<Resource>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    public ResponseEntity<File> showFileById(String fileId) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<File>(objectMapper.readValue("{\n  \"descr\" : \"descr\",\n  \"signature\" : \"signature\",\n  \"name\" : \"name\",\n  \"id\" : 0,\n  \"virus\" : true,\n  \"ownedBy\" : 6\n}", File.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<File>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<File>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
+    @Override
     public ResponseEntity<String> uploadFile(String fileId, MultipartFile file) {
-        fileService.uploadFile(fileId, file);
-        return new ResponseEntity<String>(HttpStatus.CREATED);
+        try {
+            fileService.uploadFile(UUID.fromString(fileId), file);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

@@ -27,20 +27,10 @@ public interface FilesApi {
             method = RequestMethod.GET)
     ResponseEntity<Files> listFiles(@RequestParam(value = "limit", required = false) Integer limit);
 
-    @RequestMapping(value = "/files/{fileId}/recover",
-            produces = { "text/plain", "application/json" },
-            method = RequestMethod.POST)
-    ResponseEntity<Boolean> recoverFile(@PathVariable("fileId") String fileId);
-
-    @RequestMapping(value = "/files/{fileId}/share",
-            produces = { "application/octet-stream", "application/json" },
-            method = RequestMethod.GET)
-    ResponseEntity<Resource> shareableURL(@PathVariable("fileId") String fileId, @RequestParam(value = "userName", required = false) String userName, @RequestParam(value = "expires", required = false) String expires);
-
     @RequestMapping(value = "/files/{fileId}",
             produces = { "application/json" },
-            method = RequestMethod.GET)
-    ResponseEntity<File> showFileById(@PathVariable("fileId") String fileId);
+            method = RequestMethod.DELETE)
+    ResponseEntity<Void> deleteFileByID(@PathVariable("fileId") String fileId);
 
     @RequestMapping(value = "/files/{fileId}/upload",
             produces = { "text/plain", "application/json" },

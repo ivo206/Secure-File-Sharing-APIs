@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface FileService {
     File createFile(File file);
-    void uploadFile(String fileId, MultipartFile file);
+    void uploadFile(UUID fileId, MultipartFile file);
+    void deleteFileByID(UUID fileId);
     byte[] downloadFile(UUID fileId, String token) throws IOException;
 }
