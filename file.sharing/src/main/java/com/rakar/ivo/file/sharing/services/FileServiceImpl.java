@@ -48,8 +48,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void uploadFile(String fileId, MultipartFile file) {
-        Optional<FileEntity> maybeEntity = repository.findById(UUID.fromString(fileId));
+    public void uploadFile(UUID fileId, MultipartFile file) {
+        Optional<FileEntity> maybeEntity = repository.findById(fileId);
 
         if(!maybeEntity.isPresent())
             throw new FileNotFoundException(String.format("No file exists with the file id s%", fileId));
@@ -66,6 +66,25 @@ public class FileServiceImpl implements FileService {
         }
 
         repository.save(entity);
+    }
+
+    @Override
+    public void deleteFileByID(UUID fileId) {
+        Optional<FileEntity> maybeFile = repository.findById(fileId);
+
+        if(!maybeFile.isPresent())
+            throw new FileNotFoundException(String.format("No file exists with the file id s%", fileId));
+
+        FileEntity fileEntity = maybeFile.get();
+        Path fileLocation = fileStorageLocation.resolve(fileId+"."+fileEntity.getExtension());
+        java.io.File file = new java.io.File(fileLocation.toUri());
+
+        repository.delete(fileEntity);
+
+        if(!file.exists())
+            throw new FileNotFoundException("The file with id "+fileId+" does not exist");
+
+        file.delete();
     }
 
     @Override
