@@ -1,6 +1,5 @@
 package com.rakar.ivo.file.sharing.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 

@@ -1,9 +1,8 @@
 package com.rakar.ivo.file.sharing.persistence;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-import java.util.List;
 import java.util.UUID;
 
-public interface FileRepository extends CrudRepository<FileEntity, UUID> {
+public interface FileRepository extends PagingAndSortingRepository<FileEntity, UUID> {
 }
