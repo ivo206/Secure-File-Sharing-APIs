@@ -56,6 +56,17 @@ public class FilesApiController implements FilesApi {
     }
 
     @Override
+    public ResponseEntity<File> getFileInfoById(String fileId) {
+        try {
+            File fileData = fileService.get(UUID.fromString(fileId));
+            return new ResponseEntity<>(fileData, HttpStatus.OK);
+        }
+        catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
     public Files listFiles(Integer limit) {
         Files files = fileService.listFiles(limit);
         return files;

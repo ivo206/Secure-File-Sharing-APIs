@@ -115,4 +115,13 @@ public class FileServiceImpl implements FileService {
         Page<FileEntity> files = repository.findAll(filter);
         return fileMapper.entityToModel(files.getContent());
     }
+
+    @Override
+    public File get(UUID fileId) {
+        Optional<FileEntity> maybeFile = repository.findById(fileId);
+        if(!maybeFile.isPresent())
+            throw new FileNotFoundException("The file with id "+fileId+" does not exist");
+
+        return fileMapper.entityToModel(maybeFile.get());
+    }
 }
