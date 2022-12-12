@@ -13,4 +13,5 @@ public interface FileService {
     void deleteFileByID(UUID fileId);
     byte[] downloadFile(UUID fileId, String token) throws IOException;
     Files listFiles(Integer limit);
+    File get(UUID fileId);
 }
