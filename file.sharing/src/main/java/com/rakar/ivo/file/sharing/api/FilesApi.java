@@ -2,7 +2,6 @@ package com.rakar.ivo.file.sharing.api;
 
 import com.rakar.ivo.file.sharing.model.File;
 import com.rakar.ivo.file.sharing.model.Files;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +24,7 @@ public interface FilesApi {
     @RequestMapping(value = "/files",
             produces = { "application/json" },
             method = RequestMethod.GET)
-    ResponseEntity<Files> listFiles(@RequestParam(value = "limit", required = false) Integer limit);
+    Files listFiles(@RequestParam(value = "limit", required = false) Integer limit);
 
     @RequestMapping(value = "/files/{fileId}",
             produces = { "application/json" },

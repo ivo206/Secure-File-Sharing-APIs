@@ -8,6 +8,9 @@ import com.rakar.ivo.file.sharing.persistence.FileEntity;
 import com.rakar.ivo.file.sharing.persistence.FileRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -102,5 +105,14 @@ public class FileServiceImpl implements FileService {
             throw new FileNotFoundException("The file with id "+fileId+" does not exist");
 
         return Files.readAllBytes(file.toPath());
+    }
+
+    @Override
+    public com.rakar.ivo.file.sharing.model.Files listFiles(Integer limit) {
+        if(limit==null) limit = 100;
+
+        Pageable filter = PageRequest.of(0, limit);
+        Page<FileEntity> files = repository.findAll(filter);
+        return fileMapper.entityToModel(files.getContent());
     }
 }
