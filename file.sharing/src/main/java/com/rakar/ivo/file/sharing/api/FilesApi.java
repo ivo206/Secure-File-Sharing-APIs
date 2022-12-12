@@ -21,6 +21,11 @@ public interface FilesApi {
             method = RequestMethod.GET)
     ResponseEntity<byte[]> downloadFile(@PathVariable("fileId") String fileId, @RequestParam(value = "token", required = false) String token);
 
+    @RequestMapping(value = "/files/{fileId}",
+            produces = {"application/json"},
+            method = RequestMethod.GET)
+    ResponseEntity<File> getFileInfoById(@PathVariable("fileId") String fileId);
+
     @RequestMapping(value = "/files",
             produces = { "application/json" },
             method = RequestMethod.GET)
