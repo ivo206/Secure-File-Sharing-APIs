@@ -3,6 +3,7 @@ package com.rakar.ivo.file.sharing.services;
 import com.rakar.ivo.file.sharing.configuration.FileStorageProperties;
 import com.rakar.ivo.file.sharing.exceptions.FileNotFoundException;
 import com.rakar.ivo.file.sharing.exceptions.FileStorageException;
+import com.rakar.ivo.file.sharing.exceptions.NotSupportedFileExtensionException;
 import com.rakar.ivo.file.sharing.model.File;
 import com.rakar.ivo.file.sharing.persistence.FileEntity;
 import com.rakar.ivo.file.sharing.persistence.FileRepository;
@@ -27,12 +28,15 @@ public class FileServiceImpl implements FileService {
 
     private final FileRepository repository;
     private final FileMapper fileMapper;
+
+    private final FileExtensionValidator extensionValidator;
     private final Path fileStorageLocation;
 
     @Autowired
-    public FileServiceImpl(FileRepository repository, FileMapper fileMapper, FileStorageProperties fileStorageProperties) {
+    public FileServiceImpl(FileRepository repository, FileMapper fileMapper, FileExtensionValidator extensionValidator, FileStorageProperties fileStorageProperties) {
         this.repository = repository;
         this.fileMapper = fileMapper;
+        this.extensionValidator = extensionValidator;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
 
         try {
@@ -59,6 +63,10 @@ public class FileServiceImpl implements FileService {
 
         FileEntity entity = maybeEntity.get();
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+
+        if(!extensionValidator.isValid(fileExtension))
+            throw new NotSupportedFileExtensionException("Not supported exception");
+
         entity.setExtension(fileExtension);
 
         try {
