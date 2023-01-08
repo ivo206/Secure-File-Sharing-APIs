@@ -29,14 +29,14 @@ public class FileServiceImpl implements FileService {
     private final FileRepository repository;
     private final FileMapper fileMapper;
 
-    private final FileExtensionValidator extensionValidator;
+    private final FileValidator fileValidator;
     private final Path fileStorageLocation;
 
     @Autowired
-    public FileServiceImpl(FileRepository repository, FileMapper fileMapper, FileExtensionValidator extensionValidator, FileStorageProperties fileStorageProperties) {
+    public FileServiceImpl(FileRepository repository, FileMapper fileMapper, FileValidator fileValidator, FileStorageProperties fileStorageProperties) {
         this.repository = repository;
         this.fileMapper = fileMapper;
-        this.extensionValidator = extensionValidator;
+        this.fileValidator = fileValidator;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
 
         try {
@@ -56,6 +56,8 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void uploadFile(UUID fileId, MultipartFile file) {
+        fileValidator.validate(file);
+
         Optional<FileEntity> maybeEntity = repository.findById(fileId);
 
         if(!maybeEntity.isPresent())
@@ -63,9 +65,6 @@ public class FileServiceImpl implements FileService {
 
         FileEntity entity = maybeEntity.get();
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-
-        if(!extensionValidator.isValid(fileExtension))
-            throw new NotSupportedFileExtensionException("Not supported exception");
 
         entity.setExtension(fileExtension);
 

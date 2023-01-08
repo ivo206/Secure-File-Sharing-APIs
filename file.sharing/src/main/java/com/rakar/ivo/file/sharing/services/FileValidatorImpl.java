@@ -1,16 +1,20 @@
 package com.rakar.ivo.file.sharing.services;
 
+import com.rakar.ivo.file.sharing.exceptions.InvalidMimeTypeException;
+import com.rakar.ivo.file.sharing.exceptions.NotSupportedFileExtensionException;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class FileExtensionValidatorImpl implements FileExtensionValidator {
+public class FileValidatorImpl implements FileValidator {
 
     private Map<String, String> allowedExtensions;
 
-    public FileExtensionValidatorImpl() {
+    public FileValidatorImpl() {
         allowedExtensions = new HashMap<>();
         //images
         allowedExtensions.put("jpeg", "image/jpeg");
@@ -29,7 +33,13 @@ public class FileExtensionValidatorImpl implements FileExtensionValidator {
     }
 
     @Override
-    public boolean isValid(String extension) {
-        return allowedExtensions.containsKey(extension);
+    public void validate(MultipartFile file) {
+        String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+
+        if(!allowedExtensions.containsKey(fileExtension))
+            throw new NotSupportedFileExtensionException("Not supported exception");
+
+        if(!allowedExtensions.get(fileExtension).equals(file.getContentType()))
+            throw new InvalidMimeTypeException("MIME type not supported");
     }
 }
