@@ -3,9 +3,11 @@ package com.rakar.ivo.file.sharing.services;
 import com.rakar.ivo.file.sharing.exceptions.InvalidMimeTypeException;
 import com.rakar.ivo.file.sharing.exceptions.NotSupportedFileExtensionException;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,13 +35,18 @@ public class FileValidatorImpl implements FileValidator {
     }
 
     @Override
-    public void validate(MultipartFile file) {
+    public void validate(MultipartFile file) throws IOException {
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
 
         if(!allowedExtensions.containsKey(fileExtension))
             throw new NotSupportedFileExtensionException("Not supported exception");
 
         if(!allowedExtensions.get(fileExtension).equals(file.getContentType()))
+            throw new InvalidMimeTypeException("MIME type not supported");
+
+        Tika tika = new Tika();
+
+        if(!allowedExtensions.get(fileExtension).equals(tika.detect(file.getBytes())))
             throw new InvalidMimeTypeException("MIME type not supported");
     }
 }
