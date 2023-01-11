@@ -55,7 +55,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void uploadFile(UUID fileId, MultipartFile file) {
+    public void uploadFile(UUID fileId, MultipartFile file) throws IOException {
         fileValidator.validate(file);
 
         Optional<FileEntity> maybeEntity = repository.findById(fileId);
